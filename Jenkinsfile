@@ -13,7 +13,12 @@ pipeline {
         }
         stage('Push Docker Image') {
             steps {
-                sh 'docker push abhithind31/wordpress:latest'
+                withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                    sh '''
+                    echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+                    docker push abhithind31/wordpress:latest
+                    '''
+                }
             }
         }
         stage('Deploy to Kubernetes') {
