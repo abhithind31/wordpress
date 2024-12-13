@@ -23,8 +23,18 @@ pipeline {
         }
         stage('Deploy to Kubernetes') {
             steps {
-                sh 'kubectl set image deployment/wordpress wordpress=abhithind31/wordpress:latest -n wordpress'
+                withCredentials([string(credentialsId: 'k8s-token', variable: 'KUBE_TOKEN')]) {
+                    sh '''
+                    kubectl config set-credentials jenkins --token=$KUBE_TOKEN
+                    kubectl config set-context jenkins-context --cluster=kubernetes --user=jenkins
+                    kubectl config use-context jenkins-context
+                    kubectl set image deployment/wordpress wordpress=your-docker-repo/wordpress:latest -n wordpress
+                    '''
+                }
             }
         }
+    }
+    triggers {
+        githubPush()
     }
 }
