@@ -3,7 +3,7 @@ pipeline {
     stages {
         stage('Clone Repository') {
             steps {
-                git 'https://github.com/abhithind31/wordpress.git'
+                git branch: 'main', url: 'https://github.com/abhithind31/wordpress.git'
             }
         }
         stage('Build Docker Image') {
