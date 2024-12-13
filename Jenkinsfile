@@ -1,6 +1,28 @@
 pipeline {
     agent any
     stages {
+        stage('Install Docker') {
+            steps {
+                script {
+                    // Check if Docker is installed and install it if not
+                    sh '''
+                    if ! [ -x "$(command -v docker)" ]; then
+                        echo "Docker is not installed. Installing Docker..."
+                        apt-get update
+                        apt-get install -y apt-transport-https ca-certificates curl software-properties-common
+                        curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
+                        add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+                        apt-get update
+                        apt-get install -y docker-ce
+                        usermod -aG docker jenkins
+                        echo "Docker installed successfully."
+                    else
+                        echo "Docker is already installed."
+                    fi
+                    '''
+                }
+            }
+        }
         stage('Clone Repository') {
             steps {
                 git branch: 'main', url: 'https://github.com/abhithind31/wordpress.git'
