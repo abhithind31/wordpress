@@ -39,7 +39,7 @@ jobs:
       # Step 5: Configure Kubernetes context
       - name: Configure Kubernetes Context
         run: |
-          echo "${{ secrets.KUBECONFIG }}" > kubeconfig
+          echo "${{ secrets.KUBECONFIG }}" | base64 -d > kubeconfig
           export KUBECONFIG=$PWD/kubeconfig
           kubectl config view
 
