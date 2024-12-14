@@ -32,7 +32,7 @@ jobs:
       env:
         IMAGE_TAG: ${{ steps.commit.outputs.short }}
       run: |
-        docker build -t $DOCKERHUB_REPOSITORY:$IMAGE_TAG -f .
+        docker build -t $DOCKERHUB_REPOSITORY:$IMAGE_TAG .
         docker push $DOCKERHUB_REPOSITORY:$IMAGE_TAG
 
     - name: Log in to Azure CLI
