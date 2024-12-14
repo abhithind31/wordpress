@@ -43,8 +43,21 @@ jobs:
     - name: Set up AKS credentials
       run: az aks get-credentials --resource-group $AKS_RESOURCE_GROUP --name $AKS_CLUSTER_NAME --overwrite-existing
 
+    - name: Scale Down Deployment to Prevent Multi-Attach Error
+      run: |
+        # Scale down the deployment to 0 replicas to release the volume
+        kubectl scale deployment wordpress --replicas=0 -n wordpress
+        # Wait for the pods to terminate
+        kubectl wait --for=delete pod -l app=wordpress -n wordpress --timeout=120s || true
+
     - name: Update Deployment Image
       env:
         IMAGE_TAG: ${{ steps.commit.outputs.short }}
       run: |
+        # Update the image in the deployment
         kubectl set image deployment/wordpress wordpress=$DOCKERHUB_REPOSITORY:$IMAGE_TAG -n wordpress
+
+    - name: Scale Up Deployment
+      run: |
+        # Scale up the deployment back to the desired number of replicas
+        kubectl scale deployment wordpress --replicas=1 -n wordpress
