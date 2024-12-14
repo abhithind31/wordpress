@@ -47,4 +47,4 @@ jobs:
       env:
         IMAGE_TAG: ${{ steps.commit.outputs.short }}
       run: |
-        kubectl set image deployment/flask-app flask-app=$DOCKERHUB_REPOSITORY:$IMAGE_TAG
+        kubectl set image deployment/wordpress wordpress=$DOCKERHUB_REPOSITORY:$IMAGE_TAG -n wordpress
